@@ -3,10 +3,15 @@ from flask_httpauth import HTTPBasicAuth
 import configparser
 import psycopg2
 
+DB = "postgres"
+HOST = "127.0.0.1"
+PORT = "5000"
+USER = "postgres"
+PWD = "postgres"
+
 try:
     config = configparser.RawConfigParser()
     config.read('settings.properties')
-    SLACK_TOKEN = config['bot']['SLACK_TOKEN']
     ADMIN = config['service']['ADMIN']
     PASSWORD = config['service']['PASSWORD']
     APPHOST = config['service']['APPHOST']
