@@ -1,0 +1,5 @@
+httplib2
+Flask==0.12
+Flask-HTTPAuth==3.2.4
+psycopg2
+ConfigParser==3.5.0

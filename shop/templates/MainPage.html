@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Shop</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+    <nav class="navbar" style="height: 60px; padding: 0px; background-color:#66a3ff;">
+        <div class="collapse navbar-collapse justify-content-between" style="text-align: center; display:block;" id="navbar">
+            <a class="navbar-brand shop-header" href="" id="shopName"></a>
+            <!--<form class="form-inline" action="/action_page.php" style="">-->
+                <!--<input class="form-control mr-sm-2" type="text" placeholder="Search">-->
+                <!--<button class="btn btn-success" type="submit">Search</button>-->
+            <!--</form>-->
+        </div>
+    </nav>
+
+    <div class="wrapper" style="background-image: url('../static/images/mops.jpg'); background-position: center; background-repeat: no-repeat; background-size: contain;">
+        <nav id="sidebar">
+            <div class="sidebar-header" style="padding: 20px 0px 0px 20px;">
+                <a href="" style="pointer-events: none; cursor: default;">Categories</a>
+            </div>
+
+            <ul class="list-unstyled components" id="categories"></ul>
+
+            <div id="filters" style="display: none">
+                <div class="sidebar-header" style="padding: 20px 0px 0px 20px;">
+                    <a href="" style="pointer-events: none; cursor: default;">Filters</a>
+                </div>
+                <div class="shop-filter">
+                    <label style="width: 100%; text-align: center;">Price:</label>
+                    <label>From </label>
+                    <input type="text" id="minPrice" value=""/>
+                    <label> to </label>
+                    <input type="text" id="maxPrice" value=""/>
+                    <div class="slider-container">
+                        <div class="" id="sliderPrice"></div>
+                    </div>
+
+                    <label style="width: 100%; text-align: center;">Warranty period:</label>
+                    <label>From </label>
+                    <input type="text" id="minWarranty" value=""/>
+                    <label> to </label>
+                    <input type="text" id="maxWarranty" value=""/>
+                    <div class="slider-container">
+                        <div class="" id="sliderWarranty"></div>
+                    </div>
+
+                    <label style="width: 100%; text-align: center;">Installment plan:</label>
+                    <div style="display: flex; align-items: center; justify-content: center;>">
+                        <label>Show installment </label>
+                        <input type="checkbox" id="installment" checked>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: center; margin-top: 10px;">
+                        <button class="btn btn-primary" type="submit" id="clearFilters" style="text-align: center; width: 100px; margin-right: 10px;">Clear filters</button>
+                        <button class="btn btn-primary" type="submit" id="applyFilters" style="text-align: center; width: 100px;">Show results</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <ul></ul>
+
+            <div class="sidebar-header">
+                <a href="" style="pointer-events: none; cursor: default;">Brands</a>
+            </div>
+
+            <div class="shop-text" style="text-align: center; margin-top: 20px;">
+                <div>
+                    <label>Phone: </label>
+                <label id="shopPhone"></label>
+                </div>
+                <div>
+                    <label>Address: </label>
+                    <label id="shopAddress"></label>
+                </div>
+                <a class="shop-text" href="" data-toggle="modal" data-target="#myModal" style="margin-top: 20px; width: 100px;">Go to owner page</a>
+            </div>
+        </nav>
+
+        <div style="width: 100%; height: 100%;">
+            <div class="shop-path">
+                <div id="path" class="shop-path-text" style="float: left; margin-left: 20px;">Home</div>
+                <div style="float: right;">
+                    <button class="btn btn-primary" type="submit" style="margin-right: 10px; width: 120px;" id="lowPriced">5 low priced</button>
+                    <button class="btn btn-primary" type="submit" style="margin-right: 10px; width: 120px;" id="highPriced">5 high priced</button>
+                </div>
+
+            </div>
+
+            <div id="field" style="padding: 20px;"></div>
+        </div>
+
+    </div>
+
+    <div class="modal" id="myModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h4 class="modal-title">Owner`s authorization</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <div class="modal-body">
+            <h5>Owner can:</h5>
+            <h6>&bull; Add and remove products</h6>
+            <h6>&bull; Add and remove categories, add products to categories</h6>
+            <h6>&bull; Add and remove brands, add products to brands</h6>
+          </div>
+
+          <div class="modal-footer">
+              <div class="container">
+                <label><b>Login</b></label>
+                <input class="login-input" type="text" placeholder="Enter login" id="login" required>
+
+                <label><b>Password</b></label>
+                <input class="login-input" type="password" placeholder="Enter password" id="psw" required>
+
+                <button class="login-button" type="submit" id="authorize">Authorize</button>
+              </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+<script>
+
+    var rowLen = 3
+    var isDealer = false;
+    var curCat = "";
+
+    $('#filters').hide()
+
+    $(document).ready(function () {
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('active')
+        });
+    });
+
+    var categoriesNames = JSON.parse('{{categories | safe}}')
+    var shopInfo = JSON.parse('{{shop_info | safe}}')
+
+    $('#shopName').text(shopInfo["name"])
+    $('#shopPhone').text(shopInfo["phone"])
+    $('#shopAddress').text(shopInfo["address"])
+
+    if (categoriesNames !== 0) {
+        addCategories(categoriesNames)
+    }
+
+    $('#categories').on('click', 'a', function() {
+        if (this.parentNode.getElementsByClassName("list-unstyled")[0].childNodes.length === 0) {
+            curCat = this.text
+            curCat = curCat.substring(0, curCat.indexOf(" ") - 1)
+
+            var xhr = new XMLHttpRequest()
+            var data = JSON.stringify({"action": "sendProducts", "category": curCat})
+            xhr.open("POST", "/", true)
+            xhr.setRequestHeader("Content-Type", "application/json")
+            xhr.onload = function() {
+                var json = JSON.parse(xhr.responseText)
+                createProductsTable(json["products"])
+            }
+            xhr.send(data)
+
+            xhr1 = new XMLHttpRequest();
+            data = JSON.stringify({"action": "sendPath", "category": curCat})
+            xhr1.open("POST", "/", true)
+            xhr1.setRequestHeader("Content-Type", "application/json")
+            xhr1.onload = function() {
+                var json = JSON.parse(xhr1.responseText)
+                console.log(json["path"])
+                var p = document.getElementById('path')
+                p.innerHTML = json["path"]
+            }
+            xhr1.send(data);
+
+            xhr2 = new XMLHttpRequest();
+            data = JSON.stringify({"action": "sendFilterValues", "category": curCat})
+            xhr2.open("POST", "/", true)
+            xhr2.setRequestHeader("Content-Type", "application/json")
+            xhr2.onload = function() {
+                var json = JSON.parse(xhr2.responseText)
+                console.log(json)
+                $("#sliderPrice").slider({
+                    min: json["values"]["minPrice"],
+                    max: json["values"]["maxPrice"],
+                    values: [json["values"]["minPrice"], json["values"]["maxPrice"]],
+                    range: true,
+                    stop: function(event, ui) {
+                        $("input#minPrice").val($("#sliderPrice").slider("values",0))
+                        $("input#maxPrice").val($("#sliderPrice").slider("values",1))
+                    },
+                    slide: function(event, ui){
+                        $("input#minPrice").val($("#sliderPrice").slider("values",0))
+                        $("input#maxPrice").val($("#sliderPrice").slider("values",1))
+                    }
+                })
+                $("input#minPrice").val(json["values"]["minPrice"])
+                $("input#maxPrice").val(json["values"]["maxPrice"])
+
+                $("#sliderWarranty").slider({
+                    min: json["values"]["minWarranty"],
+                    max: json["values"]["maxWarranty"],
+                    values: [json["values"]["minWarranty"], json["values"]["maxWarranty"]],
+                    range: true,
+                    stop: function(event, ui) {
+                        $("input#minWarranty").val($("#sliderWarranty").slider("values",0))
+                        $("input#maxWarranty").val($("#sliderWarranty").slider("values",1))
+                    },
+                    slide: function(event, ui){
+                        $("input#minWarranty").val($("#sliderWarranty").slider("values",0))
+                        $("input#maxWarranty").val($("#sliderWarranty").slider("values",1))
+                    }
+                })
+                $("input#minWarranty").val(json["values"]["minWarranty"])
+                $("input#maxWarranty").val(json["values"]["maxWarranty"])
+            }
+            xhr2.send(data);
+            $('#filters').show()
+        }
+    })
+
+    $('#brands').on('click', function() {
+        var data = JSON.stringify({"action": "sendBrands"})
+        xhr.open("POST", "/", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.send(data)
+    })
+
+    $('#applyFilters').on('click', function() {
+        var minPrice = $("input#minPrice").val()
+        var maxPrice = $("input#maxPrice").val()
+        var minWarranty = $("input#minWarranty").val()
+        var maxWarranty = $("input#maxWarranty").val()
+        var installment = $("input#installment").is(":checked")
+
+        var data = JSON.stringify({"action": "sendFilteredProducts", "category": curCat, "minPrice": minPrice,
+            "maxPrice": maxPrice, "minWarranty": minWarranty, "maxWarranty": maxWarranty, "installment": installment})
+        var xhr = new XMLHttpRequest()
+        xhr.open("POST", "/", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            var json = JSON.parse(xhr.responseText)
+            console.log(json)
+            createProductsTable(json["products"])
+        }
+        xhr.send(data)
+    })
+
+    $('#clearFilters').on('click', function() {
+        $('installment').prop('checked', true);
+
+        var xhr = new XMLHttpRequest()
+        var data = JSON.stringify({"action": "sendProducts", "category": curCat})
+        xhr.open("POST", "/", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            var json = JSON.parse(xhr.responseText)
+            createProductsTable(json["products"])
+        }
+        xhr.send(data)
+
+        xhr2 = new XMLHttpRequest();
+            data = JSON.stringify({"action": "sendFilterValues", "category": curCat})
+            xhr2.open("POST", "/", true)
+            xhr2.setRequestHeader("Content-Type", "application/json")
+            xhr2.onload = function() {
+                var json = JSON.parse(xhr2.responseText)
+                console.log(json)
+                $("#sliderPrice").slider({
+                    min: json["values"]["minPrice"],
+                    max: json["values"]["maxPrice"],
+                    values: [json["values"]["minPrice"], json["values"]["maxPrice"]],
+                    range: true,
+                    stop: function(event, ui) {
+                        $("input#minPrice").val($("#sliderPrice").slider("values",0))
+                        $("input#maxPrice").val($("#sliderPrice").slider("values",1))
+                    },
+                    slide: function(event, ui){
+                        $("input#minPrice").val($("#sliderPrice").slider("values",0))
+                        $("input#maxPrice").val($("#sliderPrice").slider("values",1))
+                    }
+                })
+                $("input#minPrice").val(json["values"]["minPrice"])
+                $("input#maxPrice").val(json["values"]["maxPrice"])
+
+                $("#sliderWarranty").slider({
+                    min: json["values"]["minWarranty"],
+                    max: json["values"]["maxWarranty"],
+                    values: [json["values"]["minWarranty"], json["values"]["maxWarranty"]],
+                    range: true,
+                    stop: function(event, ui) {
+                        $("input#minWarranty").val($("#sliderWarranty").slider("values",0))
+                        $("input#maxWarranty").val($("#sliderWarranty").slider("values",1))
+                    },
+                    slide: function(event, ui){
+                        $("input#minWarranty").val($("#sliderWarranty").slider("values",0))
+                        $("input#maxWarranty").val($("#sliderWarranty").slider("values",1))
+                    }
+                })
+                $("input#minWarranty").val(json["values"]["minWarranty"])
+                $("input#maxWarranty").val(json["values"]["maxWarranty"])
+            }
+            xhr2.send(data);
+            $('#filters').show()
+    })
+
+    $('#lowPriced').on('click', function() {
+        var data = JSON.stringify({"action": "sendLowPricedProducts", "category": curCat, "n": 5})
+        var xhr = new XMLHttpRequest()
+        xhr.open("POST", "/", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            var json = JSON.parse(xhr.responseText)
+            createProductsTable(json["products"])
+        }
+        xhr.send(data)
+    })
+
+    $('#highPriced').on('click', function() {
+        var data = JSON.stringify({"action": "sendHighPricedProducts", "category": curCat, "n": 5})
+        var xhr = new XMLHttpRequest()
+        xhr.open("POST", "/", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            var json = JSON.parse(xhr.responseText)
+            createProductsTable(json["products"])
+        }
+        xhr.send(data)
+    })
+
+    $('#authorize').on('click', function() {
+        var login = $('#login').val()
+        var psw = $('#psw').val()
+        console.log(login)
+        console.log(psw)
+        var data = JSON.stringify({"action": "authorize", "login": login, "password": psw})
+        xhr.open("POST", "/", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.send(data)
+    })
+
+    function createProductsTable(products) {
+        clearField()
+        var productsInRow = 0;
+        var f = document.getElementById('field')
+
+        if (products.length === 0) {
+            var d = document.createElement("div")
+            d.innerHTML = "No products in this category for such filters"
+            d.style = "font-size: 20px;"
+            f.appendChild(d)
+            return
+        }
+
+        var r = document.createElement("div")
+        r.style = "margin-bottom: 15px; display: block;"
+        r.className = "row"
+        for (i in products) {
+            if (productsInRow === rowLen) {
+                f.appendChild(r)
+                r = document.createElement("div")
+                r.style = "margin-bottom: 15px;"
+                r.className = "row"
+                productsInRow = 0
+            }
+            addProduct(r, products[i])
+            productsInRow += 1
+        }
+        if (productsInRow !== 0) {
+            //for (var i = 0; i < rowLen - products.length % rowLen; i++) {
+            //    addSpaceProduct(r)
+            //}
+            f.appendChild(r)
+        }
+    }
+
+    function addCategories(cats) {
+        var p = document.getElementById('categories');
+        for (i in cats) {
+            var n = cats[i][0].split(".").length - 1
+            cats[i][0] = cats[i][0].split(".").join("a");
+
+            var li = document.createElement("li")
+            var a = document.createElement("a")
+            var ul = document.createElement("ul")
+            li.className = "active"
+            a.setAttribute("href", "#cat" + cats[i][0])
+            a.setAttribute("data-toggle", "collapse")
+            a.setAttribute("aria-expanded", "false")
+            a.className = "dropdown-toggle"
+            a.text = cats[i][0].split("a").join(".") + ". " + cats[i][1]
+            a.style = "font-size: " + (1 - 0.1 * n) + "em;"
+            ul.className = "collapse list-unstyled"
+            ul.id = "cat" + cats[i][0]
+            ul.style = "padding-left: " + 30 * n + "px !important;"
+            li.appendChild(a)
+            li.appendChild(ul)
+
+            if (!cats[i][0].includes('a')) {
+                p.appendChild(li)
+            } else {
+                parId = "cat" + cats[i][0].substring(0, cats[i][0].lastIndexOf("a"))
+                par = document.getElementById(parId);
+                par.appendChild(li)
+            }
+        }
+    }
+
+    function addProduct(parent, product) {
+        var col = document.createElement("div")
+        var card = document.createElement("div")
+        var image = document.createElement("img")
+        var layout = document.createElement("div")
+        var name = document.createElement("a")
+        var price = document.createElement("a")
+        var descr = document.createElement("a")
+        col.className = "col"
+        col.style = "width: 200px; height: 300px; margin-right: 15px; float: left; "
+        col.id = "prod" + product["id"]
+        card.className = "card"
+        card.style = "width: 200px; height: 300px; margin-bottom: 15px;"
+        image.className = "card-img-top"
+        image.style = "width: 200px; height: 200px;"
+        image.setAttribute("src", product["img_url"])
+        layout.style = "padding = 10px; width: 200px; height: 100px;"
+        var ta = document.createElement("textarea")
+        ta.className = "shop-text"
+        ta.style = "min-width: 200px; min-height: 100px; max-width: 200px; max-height: 100px; background-color: #99c2ff"
+        ta.setAttribute("readonly", "readonly")
+        ta.value = "Name: " + product["name"] + "\nPrice: " + product["price"] + "\nWarranty_period: " + product["warranty_period"]
+        col.appendChild(card)
+        card.appendChild(image)
+        card.appendChild(layout)
+        layout.appendChild(ta)
+        parent.appendChild(col)
+    }
+
+    function addSpaceProduct(parent, product) {
+        var col = document.createElement("div")
+        var card = document.createElement("div")
+        var image = document.createElement("img")
+        var layout = document.createElement("div")
+        col.className = "col"
+        col.style = "width: 200px; height: 300px; margin-right: 15px;"
+        card.className = "card"
+        card.style = "width: 200px; height: 300px; margin-bottom: 15px; display: none"
+        image.className = "card-img-top"
+        image.style = "width: 200px; height: 200px;"
+        layout.style = "padding = 10px; width: 200px; height: 100px;"
+        col.appendChild(card)
+        card.appendChild(image)
+        card.appendChild(layout)
+        parent.appendChild(col)
+    }
+
+    function clearField() {
+        var f = document.getElementById("field")
+        for (var i = f.childNodes.length - 1; i > -1; i--) {
+            console.log("remove")
+            f.childNodes[i].remove()
+        }
+    }
+
+</script>
+</body>
+</html>
