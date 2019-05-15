@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Shop</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+    <nav class="navbar" style="height: 60px; padding: 0px; background-color:#66a3ff;">
+        <div class="collapse navbar-collapse justify-content-between" style="text-align: center; display:block;" id="navbar">
+            <a class="navbar-brand shop-header" href="">Owner`s page</a>
+        </div>
+    </nav>
+
+    <nav id="sidebar">
+        <div class="sidebar-header" style="padding: 20px 0px 0px 20px;">
+            <a class="tablinks" onclick="openTab(event, 'categories')">Categories</a>
+        </div>
+
+        <div class="sidebar-header" style="padding: 20px 0px 0px 20px;">
+            <a class="tablinks" onclick="openTab(event, 'products')">Products</a>
+        </div>
+
+        <div class="sidebar-header" style="padding: 20px 0px 0px 20px;">
+            <a class="tablinks" onclick="openTab(event, 'brands')">Brands</a>
+        </div>
+
+        <div class="sidebar-header" style="padding: 20px 0px 20px 20px;">
+            <a class="tablinks" onclick="openTab(event, 'shop')">Shop</a>
+        </div>
+
+        <div class="shop-text" style="text-align: center; margin-top: 20px;">
+            <a href="\logout" >Logout</a>
+        </div>
+    </nav>
+
+    <div class="navbar-default">
+
+        <div id="categories" class="tabcontent">
+            <div style="margin-left: 20px; margin-top: 20px; padding: 10px; background: #b3d1ff; float: left;">
+                <div class="shop-path-text" style="text-align: center; margin-bottom: 15px;">Add new category</div>
+                <div class="form-group">
+                    <label style="margin-left: 10px;">Name</label>
+                    <input class="form-control" type="text" placeholder="Name" id="newCategoryName" style="width: 200px; height: 40px; margin-left: 10px;">
+                </div>
+                <div class="form-group">
+                    <label style="margin-left: 10px;">Parent</label>
+                    <select class="form-control" id="newCategoryParent" style="width: 200px; height: 40px; margin-left: 10px;"></select>
+                </div>
+                <button class="btn btn-success" type="submit" style="margin-left: 10px; width: 120px;" id="newCategoryAdd">Add new</button>
+            </div>
+            <div style="margin-left: 20px; margin-top: 20px; padding: 10px; background: #b3d1ff; float: left;">
+                <div class="shop-path-text" style="text-align: center; margin-bottom: 15px;">Update or remove category</div>
+                <div class="form-group">
+                    <label style="margin-left: 10px;">Current category</label>
+                    <select class="form-control" id="curCategory" style="width: 200px; height: 40px; margin-left: 10px;"></select>
+                </div>
+                <div class="form-group">
+                    <label style="margin-left: 10px;">Num</label>
+                    <input class="form-control" type="text" placeholder="0" id="curCategoryNum" style="width: 200px; height: 40px; margin-left: 10px;" readonly>
+                </div>
+                <div class="form-group">
+                    <label style="margin-left: 10px;">Name</label>
+                    <input class="form-control" type="text" placeholder="Name" id="curCategoryName" style="width: 200px; height: 40px; margin-left: 10px;">
+                </div>
+                <button class="btn btn-warning" type="submit" style="margin-left: 10px; width: 120px;" id="curCategoryUpdate">Update</button>
+                <button class="btn btn-danger" type="submit" style="margin-left: 10px; width: 120px;" id="curCategoryRemove">Remove</button>
+            </div>
+        </div>
+
+        <div id="products" class="tabcontent" style="display: none;">
+            <div style="margin-left: 20px; margin-top: 20px; padding: 10px; background: #b3d1ff; float: left;">
+                <div class="shop-path-text" style="text-align: center; margin-bottom: 15px;">Add new product</div>
+                <div style="float: left;">
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Name</label>
+                        <input class="form-control" type="text" placeholder="Name" id="newProductName" style="width: 200px; height: 40px; margin-left: 10px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Price</label>
+                        <input class="form-control" type="text" placeholder="(integer or float)" id="newProductPrice" style="width: 200px; height: 40px; margin-left: 10px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Installment plan</label>
+                        <select class="form-control" id="newProductInstallmentPlan" style="width: 200px; height: 40px; margin-left: 10px;">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Warranty period</label>
+                        <input class="form-control" type="text" placeholder="(integer)" id="newProductWarrantyPeriod" style="width: 200px; height: 40px; margin-left: 10px;">
+                    </div>
+                </div>
+                <div style="float: left;">
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Image</label>
+                        <input class="form-control" type="text" placeholder="Image url" id="newProductImage" style="width: 200px; height: 40px; margin-left: 10px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Description</label>
+                        <textarea class="form-control" placeholder="Product description" id="newProductDescription" style="width: 200px; height: 128px; margin-left: 10px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Category</label>
+                        <select class="form-control" id="newProductCategory" style="width: 200px; height: 40px; margin-left: 10px;"></select>
+                    </div>
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Brand</label>
+                        <select class="form-control" id="newProductBrand" style="width: 200px; height: 40px; margin-left: 10px;"></select>
+                    </div>
+                    <button class="btn btn-success" type="submit" style="margin-left: 10px; width: 120px;" id="newProductAdd">Add new</button>
+                </div>
+            </div>
+            <div style="margin-left: 20px; margin-top: 20px; padding: 10px; background: #b3d1ff; float: left;">
+                <div class="shop-path-text" style="text-align: center; margin-bottom: 15px;">Update or remove product</div>
+                <div style="float: left;">
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Current product</label>
+                        <select class="form-control" id="curProduct" style="width: 200px; height: 40px; margin-left: 10px;"></select>
+                    </div>
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Name</label>
+                        <input class="form-control" type="text" placeholder="Name" id="curProductName" style="width: 200px; height: 40px; margin-left: 10px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Price</label>
+                        <input class="form-control" type="text" placeholder="(integer of float)" id="curProductPrice" style="width: 200px; height: 40px; margin-left: 10px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Installment plan</label>
+                        <select class="form-control" id="curProductInstallmentPlan" style="width: 200px; height: 40px; margin-left: 10px;">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Warranty period</label>
+                        <input class="form-control" type="text" placeholder="(integer)" id="curProductWarrantyPeriod" style="width: 200px; height: 40px; margin-left: 10px;">
+                    </div>
+                </div>
+                <div style="float: left;">
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Image</label>
+                        <input class="form-control" type="text" placeholder="Image url" id="curProductImage" style="width: 200px; height: 40px; margin-left: 10px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Description</label>
+                        <textarea class="form-control" placeholder="Product description" id="curProductDescription" style="width: 200px; height: 128px; margin-left: 10px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Category</label>
+                        <select class="form-control" id="curProductCategory" style="width: 200px; height: 40px; margin-left: 10px;"></select>
+                    </div>
+                    <div class="form-group">
+                        <label style="margin-left: 10px;">Brand</label>
+                        <select class="form-control" id="curProductBrand" style="width: 200px; height: 40px; margin-left: 10px;"></select>
+                    </div>
+                    <button class="btn btn-warning" type="submit" style="margin-left: 10px; width: 120px;" id="curProductUpdate">Update</button>
+                    <button class="btn btn-danger" type="submit" style="margin-left: 10px; width: 120px;" id="curProductRemove">Remove</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="brands" class="tabcontent" style="display: none;">
+            <div style="margin-left: 20px; margin-top: 20px; padding: 10px; background: #b3d1ff; float: left;">
+                <div class="shop-path-text" style="text-align: center; margin-bottom: 15px;">Add new brand</div>
+                <div class="form-group">
+                    <label style="margin-left: 10px;">Name</label>
+                    <input class="form-control" type="text" placeholder="Name" id="newBrandName" style="width: 200px; height: 40px; margin-left: 10px;">
+                </div>
+                <div class="form-group">
+                    <label style="margin-left: 10px;">Image</label>
+                    <input class="form-control" type="text" placeholder="Image url" id="newBrandImage" style="width: 200px; height: 40px; margin-left: 10px;">
+                </div>
+                <div class="form-group">
+                    <label style="margin-left: 10px;">Description</label>
+                    <textarea class="form-control" placeholder="Brand description" id="newBrandDescription" style="width: 200px; height: 128px; margin-left: 10px;"></textarea>
+                </div>
+                <button class="btn btn-success" type="submit" style="margin-left: 10px; width: 120px;" id="newBrandAdd">Add new</button>
+            </div>
+            <div style="margin-left: 20px; margin-top: 20px; padding: 10px; background: #b3d1ff; float: left;">
+                <div class="shop-path-text" style="text-align: center; margin-bottom: 15px;">Update or remove brand</div>
+                <div class="form-group">
+                        <label style="margin-left: 10px;">Current brand</label>
+                        <select class="form-control" id="curBrand" style="width: 200px; height: 40px; margin-left: 10px;"></select>
+                </div>
+                <div class="form-group">
+                    <label style="margin-left: 10px;">Name</label>
+                    <input class="form-control" type="text" placeholder="Name" id="curBrandName" style="width: 200px; height: 40px; margin-left: 10px;">
+                </div>
+                <div class="form-group">
+                    <label style="margin-left: 10px;">Image</label>
+                    <input class="form-control" type="text" placeholder="Image url" id="curBrandImage" style="width: 200px; height: 40px; margin-left: 10px;">
+                </div>
+                <div class="form-group">
+                    <label style="margin-left: 10px;">Description</label>
+                    <textarea class="form-control" placeholder="Brand description" id="curBrandDescription" style="width: 200px; height: 128px; margin-left: 10px;"></textarea>
+                </div>
+                <button class="btn btn-warning" type="submit" style="margin-left: 10px; width: 120px;" id="curBrandUpdate">Update</button>
+                <button class="btn btn-danger" type="submit" style="margin-left: 10px; width: 120px;" id="curBrandRemove">Remove</button>
+            </div>
+        </div>
+
+        <div id="shop" class="tabcontent" style="display: none;">
+            <div style="margin-left: 20px; margin-top: 20px; padding: 10px; background: #b3d1ff; float: left;">
+                <div class="shop-path-text" style="text-align: center; margin-bottom: 15px;">Update shop info</div>
+                <div class="form-group">
+                    <label style="margin-left: 10px;">Name</label>
+                    <input class="form-control" type="text" placeholder="Shop" id="shopName" style="width: 200px; height: 40px; margin-left: 10px;">
+                </div>
+                <div class="form-group">
+                    <label style="margin-left: 10px;">Phone</label>
+                    <input class="form-control" type="text" placeholder="8(800)553535" id="shopPhone" style="width: 200px; height: 40px; margin-left: 10px;">
+                </div>
+                <div class="form-group">
+                    <label style="margin-left: 10px;">Address</label>
+                    <input class="form-control" type="text" placeholder="Pirogova 14" id="shopAddress" style="width: 200px; height: 40px; margin-left: 10px;">
+                </div>
+                <button class="btn btn-warning" type="submit" style="margin-left: 10px; width: 120px;" id="shopUpdate">Update</button>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div id="chooseType" class="modal fade my-font" role="dialog">
+      <div class="vertical-alignment-helper">
+        <div class="modal-dialog vertical-align-center">
+          <div class="modal-content">
+            <div id="address" style="display: none;"></div>
+            <div class="header-label" style="padding: 15px;">Choose feature type</div>
+            <div id="typesList" class="tab-elem modal-body" style="width: 60%; height: 150px;"></div>
+            <div class="modal-footer">
+              <button id="close1" type="button" class="btn btn-info my-btn" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script>
+
+    var nodeCategories = JSON.parse('{{node_categories | safe}}')
+    var leafCategories = JSON.parse('{{leaf_categories | safe}}')
+    var categories = JSON.parse('{{categories | safe}}')
+    var products = JSON.parse('{{products | safe}}')
+    var brands = JSON.parse('{{brands | safe}}')
+    var shopInfo = JSON.parse('{{shop_info | safe}}')
+
+    $('#curCategory').on('change', function() {
+        cat = getById(categories, this.options[this.selectedIndex].value)
+        $('#curCategoryName').val(cat["name"])
+        $('#curCategoryNum').val(cat["id"])
+    })
+
+    $('#curProduct').on('change', function() {
+        pr = getById(products, this.options[this.selectedIndex].value)
+        $('#curProductName').val(pr["name"])
+        $('#curProductPrice').val(pr["price"])
+        $('#curProductInstallmentPlan').val("" + pr["installment_plan"])
+        $('#curProductWarrantyPeriod').val(pr["warranty_period"])
+        $('#curProductImage').val(pr["img_url"])
+        $('#curProductDescription').val(pr["description"])
+        $('#curProductCategory').val(pr["cat_num"])
+        $('#curProductBrand').val(pr["br_id"])
+    })
+
+    $('#curBrand').on('change', function() {
+        br = getById(brands, this.options[this.selectedIndex].value)
+        $('#curBrandName').val(br["name"])
+        $('#curBrandImage').val(br["img_url"])
+        $('#curBrandDescription').val(br["description"])
+    })
+
+    $('#newCategoryAdd').on('click', function() {
+        var data = JSON.stringify({"action": "addCategory",
+                                   "name": $('#newCategoryName').val(),
+                                   "parent": $('#newCategoryParent').val()
+                                   })
+        $('#newCategoryName').val("")
+        var xhr = new XMLHttpRequest()
+        xhr.open("POST", "/owner", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            var json = JSON.parse(xhr.responseText)
+            nodeCategories = json["node_categories"]
+            leafCategories = json["leaf_categories"]
+            categories = nodeCategories.concat(leafCategories)
+            fillSelect('newCategoryParent', nodeCategories)
+            fillSelect('curCategory', categories)
+            fillSelect('newProductCategory', leafCategories)
+            fillSelect('curProductCategory', leafCategories)
+        }
+        xhr.send(data)
+    })
+
+    $('#newProductAdd').on('click', function() {
+        var data = JSON.stringify({"action": "addProduct",
+                                   "name": $('#newProductName').val(),
+                                   "price": $('#newProductPrice').val(),
+                                   "img_url": $('#newProductImage').val(),
+                                   "description": $('#newProductDescription').val(),
+                                   "warranty_period": $('#newProductWarrantyPeriod').val(),
+                                   "installment_plan": ($('#newProductInstallmentPlan').val() == 'true'),
+                                   "category": $('#newProductCategory').val(),
+                                   "brand": $('#newProductBrand').val(),
+                                   })
+        $('#newProductName').val("")
+        $('#newProductPrice').val("")
+        $('#newProductImage').val("")
+        $('#newProductDescription').val("")
+        $('#newProductWarrantyPeriod').val("")
+        var xhr = new XMLHttpRequest()
+        xhr.open("POST", "/owner", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            var json = JSON.parse(xhr.responseText)
+            products = json["products"]
+            fillSelect('curProduct', products)
+        }
+        xhr.send(data)
+    })
+
+    $('#newBrandAdd').on('click', function() {
+        var data = JSON.stringify({"action": "addBrand",
+                                   "name": $('#newBrandName').val(),
+                                   "img_url": $('#newBrandImage').val(),
+                                   "description": $('#newBrandDescription').val()
+                                   })
+        $('#newBrandName').val("")
+        $('#newBrandImage').val("")
+        $('#newBrandDescription').val("")
+        var xhr = new XMLHttpRequest()
+        xhr.open("POST", "/owner", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            var json = JSON.parse(xhr.responseText)
+            brands = json["brands"]
+            fillSelect('newProductBrand', brands)
+            fillSelect('curProductBrand', brands)
+            fillSelect('curBrand', brands)
+        }
+        xhr.send(data)
+    })
+
+    $('#curCategoryUpdate').on('click', function() {
+        var data = JSON.stringify({"action": "updateCategory",
+                                   "id": $('#curCategoryNum').val(),
+                                   "name": $('#curCategoryName').val()
+                                   })
+        var xhr = new XMLHttpRequest()
+        xhr.open("POST", "/owner", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            var json = JSON.parse(xhr.responseText)
+            nodeCategories = json["node_categories"]
+            leafCategories = json["leaf_categories"]
+            categories = nodeCategories.concat(leafCategories)
+            fillSelect('newCategoryParent', nodeCategories)
+            fillSelect('curCategory', categories)
+            fillSelect('newProductCategory', leafCategories)
+            fillSelect('curProductCategory', leafCategories)
+        }
+        xhr.send(data)
+    })
+
+    $('#curProductUpdate').on('click', function() {
+        var data = JSON.stringify({"action": "updateProduct",
+                                   "id": $('#curProduct').val(),
+                                   "name": $('#curProductName').val(),
+                                   "price": $('#curProductPrice').val(),
+                                   "img_url": $('#curProductImage').val(),
+                                   "description": $('#curProductDescription').val(),
+                                   "warranty_period": $('#curProductWarrantyPeriod').val(),
+                                   "installment_plan": ($('#curProductInstallmentPlan').val() == 'true'),
+                                   "category": $('#curProductCategory').val(),
+                                   "brand": $('#curProductBrand').val(),
+                                   })
+        var xhr = new XMLHttpRequest()
+        xhr.open("POST", "/owner", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            var json = JSON.parse(xhr.responseText)
+            products = json["products"]
+            fillSelect('curProduct', products)
+        }
+        xhr.send(data)
+    })
+
+    $('#curBrandUpdate').on('click', function() {
+        var data = JSON.stringify({"action": "updateBrand",
+                                   "id": $('#curBrand').val(),
+                                   "name": $('#curBrandName').val(),
+                                   "img_url": $('#curBrandImage').val(),
+                                   "description": $('#curBrandDescription').val()
+                                   })
+        var xhr = new XMLHttpRequest()
+        xhr.open("POST", "/owner", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            var json = JSON.parse(xhr.responseText)
+            brands = json["brands"]
+            fillSelect('newProductBrand', brands)
+            fillSelect('curProductBrand', brands)
+            fillSelect('curBrand', brands)
+        }
+        xhr.send(data)
+    })
+
+    $('#shopUpdate').on('click', function() {
+        var data = JSON.stringify({"action": "updateShop",
+                                   "name": $('#shopName').val(),
+                                   "phone": $('#shopPhone').val(),
+                                   "address": $('#shopAddress').val()
+                                   })
+        var xhr = new XMLHttpRequest()
+        xhr.open("POST", "/owner", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            var json = JSON.parse(xhr.responseText)
+            shopInfo = json["shop_info"]
+            $('#shopName').val(shopInfo["name"])
+            $('#shopPhone').val(shopInfo["phone"])
+            $('#shopAddress').val(shopInfo["address"])
+        }
+        xhr.send(data)
+    })
+
+    $('#curCategoryRemove').on('click', function() {
+        var data = JSON.stringify({"action": "removeCategory",
+                                   "id": $('#curCategoryNum').val()
+                                   })
+        var xhr = new XMLHttpRequest()
+        xhr.open("POST", "/owner", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            var json = JSON.parse(xhr.responseText)
+            nodeCategories = json["node_categories"]
+            leafCategories = json["leaf_categories"]
+            categories = nodeCategories.concat(leafCategories)
+            fillSelect('newCategoryParent', nodeCategories)
+            fillSelect('curCategory', categories)
+            fillSelect('newProductCategory', leafCategories)
+            fillSelect('curProductCategory', leafCategories)
+        }
+        xhr.send(data)
+    })
+
+    $('#curProductRemove').on('click', function() {
+        var data = JSON.stringify({"action": "removeProduct",
+                                   "id": $('#curProduct').val()
+                                   })
+        var xhr = new XMLHttpRequest()
+        xhr.open("POST", "/owner", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            var json = JSON.parse(xhr.responseText)
+            products = json["products"]
+            fillSelect('curProduct', products)
+        }
+        xhr.send(data)
+    })
+
+    $('#curBrandRemove').on('click', function() {
+        var data = JSON.stringify({"action": "removeBrand",
+                                   "id": $('#curBrand').val()
+                                   })
+        var xhr = new XMLHttpRequest()
+        xhr.open("POST", "/owner", true)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            var json = JSON.parse(xhr.responseText)
+            brands = json["brands"]
+            fillSelect('newProductBrand', brands)
+            fillSelect('curProductBrand', brands)
+            fillSelect('curBrand', brands)
+        }
+        xhr.send(data)
+    })
+
+    function fillSelect(name, values) {
+        select = document.getElementById(name)
+        for (var i = select.childNodes.length - 1; i > -1; i--) {
+            select.childNodes[i].remove()
+        }
+        for (v in values) {
+            var opt = document.createElement("option")
+            opt.value = values[v]["id"]
+            opt.text = values[v]["name"]
+            select.appendChild(opt)
+        }
+        $('#' + name).trigger('change')
+    }
+
+    function getById(from, id) {
+        for (v in from) {
+            if (from[v]["id"] == id) {
+                return from[v]
+            }
+        }
+    }
+
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent")
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none"
+        }
+        tablinks = document.getElementsByClassName("tablinks")
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "")
+        }
+        document.getElementById(tabName).style.display = "block"
+        evt.currentTarget.className += " active"
+    }
+
+    fillSelect('newCategoryParent', nodeCategories)
+    fillSelect('curCategory', categories)
+    fillSelect('newProductCategory', leafCategories)
+    fillSelect('curProductCategory', leafCategories)
+    fillSelect('curProduct', products)
+    fillSelect('newProductBrand', brands)
+    fillSelect('curProductBrand', brands)
+    fillSelect('curBrand', brands)
+
+    $('#shopName').val(shopInfo["name"])
+    $('#shopPhone').val(shopInfo["phone"])
+    $('#shopAddress').val(shopInfo["address"])
+</script>
+</body>
+</html>

@@ -18,14 +18,10 @@
     <nav class="navbar" style="height: 60px; padding: 0px; background-color:#66a3ff;">
         <div class="collapse navbar-collapse justify-content-between" style="text-align: center; display:block;" id="navbar">
             <a class="navbar-brand shop-header" href="" id="shopName"></a>
-            <!--<form class="form-inline" action="/action_page.php" style="">-->
-                <!--<input class="form-control mr-sm-2" type="text" placeholder="Search">-->
-                <!--<button class="btn btn-success" type="submit">Search</button>-->
-            <!--</form>-->
         </div>
     </nav>
 
-    <div class="wrapper" style="background-image: url('../static/images/mops.jpg'); background-position: center; background-repeat: no-repeat; background-size: contain;">
+    <div class="wrapper" id="background" style="background-image: url('../static/images/mops.jpg'); background-position: center; background-repeat: no-repeat; background-size: 100%;">
         <nav id="sidebar">
             <div class="sidebar-header" style="padding: 20px 0px 0px 20px;">
                 <a href="" style="pointer-events: none; cursor: default;">Categories</a>
@@ -69,11 +65,10 @@
                 </div>
             </div>
 
-
             <ul></ul>
 
             <div class="sidebar-header">
-                <a href="" style="pointer-events: none; cursor: default;">Brands</a>
+                <a id="brands">Brands</a>
             </div>
 
             <div class="shop-text" style="text-align: center; margin-top: 20px;">
@@ -85,61 +80,52 @@
                     <label>Address: </label>
                     <label id="shopAddress"></label>
                 </div>
-                <a class="shop-text" href="" data-toggle="modal" data-target="#myModal" style="margin-top: 20px; width: 100px;">Go to owner page</a>
+                <a href="\owner" style="margin-top: 20px; width: 100px;">Go to owner page</a>
             </div>
         </nav>
 
         <div style="width: 100%; height: 100%;">
             <div class="shop-path">
                 <div id="path" class="shop-path-text" style="float: left; margin-left: 20px;">Home</div>
-                <div style="float: right;">
+                <div class="shop-path-text" id="categoryInfo"></div>
+                <div style="float: right; display: none" id="categoryButtons">
                     <button class="btn btn-primary" type="submit" style="margin-right: 10px; width: 120px;" id="lowPriced">5 low priced</button>
                     <button class="btn btn-primary" type="submit" style="margin-right: 10px; width: 120px;" id="highPriced">5 high priced</button>
                 </div>
-
             </div>
-
             <div id="field" style="padding: 20px;"></div>
         </div>
-
     </div>
 
-    <div class="modal" id="myModal">
-      <div class="modal-dialog">
-        <div class="modal-content">
+    <div class="modal" id="buyModal">
+        <div class="modal-dialog" style="max-width: 850px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Buy product</h4>
+                    <button type="button" class="close" data-dismiss="modal" id="buyClose">&times;</button>
+                </div>
 
-          <div class="modal-header">
-            <h4 class="modal-title">Owner`s authorization</h4>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-          </div>
+                <div class="modal-body">
+                    <img src="" id="buyImage" style="min-width: 400px; min-height: 300px; max-width: 400px; max-height: 300px; float: left;">
+                    <textarea id="buyTextarea" style="width: 400px; height: 300px; float: left; padding: 15px;" readonly></textarea>
+                </div>
 
-          <div class="modal-body">
-            <h5>Owner can:</h5>
-            <h6>&bull; Add and remove products</h6>
-            <h6>&bull; Add and remove categories, add products to categories</h6>
-            <h6>&bull; Add and remove brands, add products to brands</h6>
-          </div>
-
-          <div class="modal-footer">
-              <div class="container">
-                <label><b>Login</b></label>
-                <input class="login-input" type="text" placeholder="Enter login" id="login" required>
-
-                <label><b>Password</b></label>
-                <input class="login-input" type="password" placeholder="Enter password" id="psw" required>
-
-                <button class="login-button" type="submit" id="authorize">Authorize</button>
-              </div>
-          </div>
-
+                <div class="modal-footer">
+                    <div class="container">
+                        <label><b>Your name</b></label>
+                        <input class="login-input" type="text" placeholder="Nice mops" id="buyName" required>
+                        <label><b>Your phone</b></label>
+                        <input class="login-input" type="text" placeholder="8(802)9848233" id="buyPhone" required>
+                        <button class="login-button" type="submit" id="makeOrder">Make order</button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
 <script>
 
-    var rowLen = 3
-    var isDealer = false;
+    var rowLen = 5
     var curCat = "";
 
     $('#filters').hide()
@@ -163,6 +149,9 @@
 
     $('#categories').on('click', 'a', function() {
         if (this.parentNode.getElementsByClassName("list-unstyled")[0].childNodes.length === 0) {
+            $('#background').css({"background": "linear-gradient(rgba(204, 224, 255, 0.7), rgba(204, 224, 255, 0.7)), url('../static/images/mops.jpg')",
+                                  "background-position": "center", "background-repeat": "no-repeat", "background-size": "100%"})
+            $('#categoryButtons').show()
             curCat = this.text
             curCat = curCat.substring(0, curCat.indexOf(" ") - 1)
 
@@ -172,7 +161,7 @@
             xhr.setRequestHeader("Content-Type", "application/json")
             xhr.onload = function() {
                 var json = JSON.parse(xhr.responseText)
-                createProductsTable(json["products"])
+                createItemsTable(json["products"], "product")
             }
             xhr.send(data)
 
@@ -182,9 +171,8 @@
             xhr1.setRequestHeader("Content-Type", "application/json")
             xhr1.onload = function() {
                 var json = JSON.parse(xhr1.responseText)
-                console.log(json["path"])
                 var p = document.getElementById('path')
-                p.innerHTML = json["path"]
+                p.innerHTML = "Path: " + json["path"]
             }
             xhr1.send(data);
 
@@ -231,13 +219,37 @@
             }
             xhr2.send(data);
             $('#filters').show()
+
+
+            xhr3 = new XMLHttpRequest();
+            data = JSON.stringify({"action": "sendCategoryInfo", "category": curCat})
+            xhr3.open("POST", "/", true)
+            xhr3.setRequestHeader("Content-Type", "application/json")
+            xhr3.onload = function() {
+                var json = JSON.parse(xhr3.responseText)
+                var p = document.getElementById('categoryInfo')
+                p.innerHTML = "Average price: " + json["info"]["avg_price"]
+            }
+            xhr3.send(data);
+            $('#categoryInfo').show()
         }
     })
 
     $('#brands').on('click', function() {
+        $('#categoryButtons').hide()
+        $('#categoryInfo').hide()
         var data = JSON.stringify({"action": "sendBrands"})
+        var xhr = new XMLHttpRequest()
         xhr.open("POST", "/", true)
         xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.onload = function() {
+            $('#background').css({"background": "linear-gradient(rgba(204, 224, 255, 0.7), rgba(204, 224, 255, 0.7)), url('../static/images/mops.jpg')",
+                                  "background-position": "center", "background-repeat": "no-repeat", "background-size": "100%"})
+            var json = JSON.parse(xhr.responseText)
+            createItemsTable(json["brands"], "brand")
+            var p = document.getElementById('path')
+            p.innerHTML = "Path: brands"
+        }
         xhr.send(data)
     })
 
@@ -256,7 +268,7 @@
         xhr.onload = function() {
             var json = JSON.parse(xhr.responseText)
             console.log(json)
-            createProductsTable(json["products"])
+            createItemsTable(json["products"], "product")
         }
         xhr.send(data)
     })
@@ -270,53 +282,53 @@
         xhr.setRequestHeader("Content-Type", "application/json")
         xhr.onload = function() {
             var json = JSON.parse(xhr.responseText)
-            createProductsTable(json["products"])
+            createItemsTable(json["products"], "product")
         }
         xhr.send(data)
 
         xhr2 = new XMLHttpRequest();
-            data = JSON.stringify({"action": "sendFilterValues", "category": curCat})
-            xhr2.open("POST", "/", true)
-            xhr2.setRequestHeader("Content-Type", "application/json")
-            xhr2.onload = function() {
-                var json = JSON.parse(xhr2.responseText)
-                console.log(json)
-                $("#sliderPrice").slider({
-                    min: json["values"]["minPrice"],
-                    max: json["values"]["maxPrice"],
-                    values: [json["values"]["minPrice"], json["values"]["maxPrice"]],
-                    range: true,
-                    stop: function(event, ui) {
-                        $("input#minPrice").val($("#sliderPrice").slider("values",0))
-                        $("input#maxPrice").val($("#sliderPrice").slider("values",1))
-                    },
-                    slide: function(event, ui){
-                        $("input#minPrice").val($("#sliderPrice").slider("values",0))
-                        $("input#maxPrice").val($("#sliderPrice").slider("values",1))
-                    }
-                })
-                $("input#minPrice").val(json["values"]["minPrice"])
-                $("input#maxPrice").val(json["values"]["maxPrice"])
+        data = JSON.stringify({"action": "sendFilterValues", "category": curCat})
+        xhr2.open("POST", "/", true)
+        xhr2.setRequestHeader("Content-Type", "application/json")
+        xhr2.onload = function() {
+            var json = JSON.parse(xhr2.responseText)
+            console.log(json)
+            $("#sliderPrice").slider({
+                min: json["values"]["minPrice"],
+                max: json["values"]["maxPrice"],
+                values: [json["values"]["minPrice"], json["values"]["maxPrice"]],
+                range: true,
+                stop: function(event, ui) {
+                    $("input#minPrice").val($("#sliderPrice").slider("values",0))
+                    $("input#maxPrice").val($("#sliderPrice").slider("values",1))
+                },
+                slide: function(event, ui){
+                    $("input#minPrice").val($("#sliderPrice").slider("values",0))
+                    $("input#maxPrice").val($("#sliderPrice").slider("values",1))
+                }
+            })
+            $("input#minPrice").val(json["values"]["minPrice"])
+            $("input#maxPrice").val(json["values"]["maxPrice"])
 
-                $("#sliderWarranty").slider({
-                    min: json["values"]["minWarranty"],
-                    max: json["values"]["maxWarranty"],
-                    values: [json["values"]["minWarranty"], json["values"]["maxWarranty"]],
-                    range: true,
-                    stop: function(event, ui) {
-                        $("input#minWarranty").val($("#sliderWarranty").slider("values",0))
-                        $("input#maxWarranty").val($("#sliderWarranty").slider("values",1))
-                    },
-                    slide: function(event, ui){
-                        $("input#minWarranty").val($("#sliderWarranty").slider("values",0))
-                        $("input#maxWarranty").val($("#sliderWarranty").slider("values",1))
-                    }
-                })
-                $("input#minWarranty").val(json["values"]["minWarranty"])
-                $("input#maxWarranty").val(json["values"]["maxWarranty"])
-            }
-            xhr2.send(data);
-            $('#filters').show()
+            $("#sliderWarranty").slider({
+                min: json["values"]["minWarranty"],
+                max: json["values"]["maxWarranty"],
+                values: [json["values"]["minWarranty"], json["values"]["maxWarranty"]],
+                range: true,
+                stop: function(event, ui) {
+                    $("input#minWarranty").val($("#sliderWarranty").slider("values",0))
+                    $("input#maxWarranty").val($("#sliderWarranty").slider("values",1))
+                },
+                slide: function(event, ui){
+                    $("input#minWarranty").val($("#sliderWarranty").slider("values",0))
+                    $("input#maxWarranty").val($("#sliderWarranty").slider("values",1))
+                }
+            })
+            $("input#minWarranty").val(json["values"]["minWarranty"])
+            $("input#maxWarranty").val(json["values"]["maxWarranty"])
+        }
+        xhr2.send(data);
+        $('#filters').show()
     })
 
     $('#lowPriced').on('click', function() {
@@ -326,7 +338,7 @@
         xhr.setRequestHeader("Content-Type", "application/json")
         xhr.onload = function() {
             var json = JSON.parse(xhr.responseText)
-            createProductsTable(json["products"])
+            createItemsTable(json["products"], "product")
         }
         xhr.send(data)
     })
@@ -338,7 +350,7 @@
         xhr.setRequestHeader("Content-Type", "application/json")
         xhr.onload = function() {
             var json = JSON.parse(xhr.responseText)
-            createProductsTable(json["products"])
+            createItemsTable(json["products"], "product")
         }
         xhr.send(data)
     })
@@ -354,37 +366,87 @@
         xhr.send(data)
     })
 
-    function createProductsTable(products) {
+    $('#buyClose').on('click', function() {
+        $('#buyModal').hide()
+    })
+
+    $('#makeOrder').on('click', function() {
+        alert("Your successfully made order. Please, wait for operators call");
+        $('#buyModal').hide()
+    })
+
+    $('#field').on('click', '.col', function() {
+        var id = $(this).attr("id")
+        if (id[0] == "p"){
+            id = id.slice(1)
+            $('#buyImage').attr("src", $(this).children().eq(0).attr("src"))
+            var data = JSON.stringify({"action": "sendProductInfo", "id": id})
+            var xhr = new XMLHttpRequest()
+            xhr.open("POST", "/", true)
+            xhr.setRequestHeader("Content-Type", "application/json")
+            xhr.onload = function() {
+                var json = JSON.parse(xhr.responseText)
+                json = json["products"]
+                text = "Name: " + json["name"] + "\nBrand: " + json["brand"] + "\nPrice: " + json["price"] +
+                       "\nWarranty_period: " + json["warranty_period"] + "\nDescription: " + json["description"]
+                $('#buyTextarea').text(text)
+                $('#buyModal').show()
+            }
+            xhr.send(data)
+        } else if (id[0] == "b") {
+            id = id.slice(1)
+            var data = JSON.stringify({"action": "sendProductsByBrand", "id": id})
+            var xhr = new XMLHttpRequest()
+            xhr.open("POST", "/", true)
+            xhr.setRequestHeader("Content-Type", "application/json")
+            xhr.onload = function() {
+                var json = JSON.parse(xhr.responseText)
+                createItemsTable(json["products"], "product")
+                var p = document.getElementById('path')
+                p.innerHTML = "Path: brands/" + json["name"]
+            }
+            xhr.send(data)
+        }
+    })
+
+    function createItemsTable(items, type) {
         clearField()
-        var productsInRow = 0;
+        var itemsInRow = 0;
         var f = document.getElementById('field')
 
-        if (products.length === 0) {
+        if (items.length === 0) {
             var d = document.createElement("div")
-            d.innerHTML = "No products in this category for such filters"
+            d.innerHTML = "No items in this category for such filters"
             d.style = "font-size: 20px;"
             f.appendChild(d)
             return
         }
 
         var r = document.createElement("div")
-        r.style = "margin-bottom: 15px; display: block;"
+        r.style = "margin-bottom: 15px;"
         r.className = "row"
-        for (i in products) {
-            if (productsInRow === rowLen) {
+        for (i in items) {
+            if (itemsInRow === rowLen) {
                 f.appendChild(r)
                 r = document.createElement("div")
                 r.style = "margin-bottom: 15px;"
                 r.className = "row"
-                productsInRow = 0
+                itemsInRow = 0
             }
-            addProduct(r, products[i])
-            productsInRow += 1
+            if (type == "product") {
+                id = "p" + items[i]["id"]
+                text = "Name: " + items[i]["name"] + "\nPrice: " + items[i]["price"] + "\nWarranty_period: " + items[i]["warranty_period"]
+                img = items[i]["img_url"]
+                addItem(r, id, img, text)
+            } else if (type == "brand") {
+                id = "b" + items[i]["id"]
+                text = "Name: " + items[i]["name"] + "\nDescription: " + items[i]["description"]
+                img = items[i]["img_url"]
+                addItem(r, id, img, text)
+            }
+            itemsInRow += 1
         }
-        if (productsInRow !== 0) {
-            //for (var i = 0; i < rowLen - products.length % rowLen; i++) {
-            //    addSpaceProduct(r)
-            //}
+        if (itemsInRow !== 0) {
             f.appendChild(r)
         }
     }
@@ -392,86 +454,57 @@
     function addCategories(cats) {
         var p = document.getElementById('categories');
         for (i in cats) {
-            var n = cats[i][0].split(".").length - 1
-            cats[i][0] = cats[i][0].split(".").join("a");
+            var n = cats[i]["id"].split(".").length - 1
+            cats[i]["id"] = cats[i]["id"].split(".").join("a");
 
             var li = document.createElement("li")
             var a = document.createElement("a")
             var ul = document.createElement("ul")
             li.className = "active"
-            a.setAttribute("href", "#cat" + cats[i][0])
+            a.setAttribute("href", "#cat" + cats[i]["id"])
             a.setAttribute("data-toggle", "collapse")
             a.setAttribute("aria-expanded", "false")
             a.className = "dropdown-toggle"
-            a.text = cats[i][0].split("a").join(".") + ". " + cats[i][1]
+            a.text = cats[i]["id"].split("a").join(".") + ". " + cats[i]["name"]
             a.style = "font-size: " + (1 - 0.1 * n) + "em;"
             ul.className = "collapse list-unstyled"
-            ul.id = "cat" + cats[i][0]
+            ul.id = "cat" + cats[i]["id"]
             ul.style = "padding-left: " + 30 * n + "px !important;"
             li.appendChild(a)
             li.appendChild(ul)
 
-            if (!cats[i][0].includes('a')) {
+            if (!cats[i]["id"].includes('a')) {
                 p.appendChild(li)
             } else {
-                parId = "cat" + cats[i][0].substring(0, cats[i][0].lastIndexOf("a"))
+                parId = "cat" + cats[i]["id"].substring(0, cats[i]["id"].lastIndexOf("a"))
                 par = document.getElementById(parId);
                 par.appendChild(li)
             }
         }
     }
 
-    function addProduct(parent, product) {
+    function addItem(parent, id, img, text) {
         var col = document.createElement("div")
-        var card = document.createElement("div")
         var image = document.createElement("img")
-        var layout = document.createElement("div")
-        var name = document.createElement("a")
-        var price = document.createElement("a")
-        var descr = document.createElement("a")
         col.className = "col"
-        col.style = "width: 200px; height: 300px; margin-right: 15px; float: left; "
-        col.id = "prod" + product["id"]
-        card.className = "card"
-        card.style = "width: 200px; height: 300px; margin-bottom: 15px;"
+        col.style = "max-width: 200px; max-height: 300px; margin-right: 15px; float: left; "
+        col.id = id
         image.className = "card-img-top"
         image.style = "width: 200px; height: 200px;"
-        image.setAttribute("src", product["img_url"])
-        layout.style = "padding = 10px; width: 200px; height: 100px;"
+        image.setAttribute("src", img)
         var ta = document.createElement("textarea")
         ta.className = "shop-text"
         ta.style = "min-width: 200px; min-height: 100px; max-width: 200px; max-height: 100px; background-color: #99c2ff"
         ta.setAttribute("readonly", "readonly")
-        ta.value = "Name: " + product["name"] + "\nPrice: " + product["price"] + "\nWarranty_period: " + product["warranty_period"]
-        col.appendChild(card)
-        card.appendChild(image)
-        card.appendChild(layout)
-        layout.appendChild(ta)
-        parent.appendChild(col)
-    }
-
-    function addSpaceProduct(parent, product) {
-        var col = document.createElement("div")
-        var card = document.createElement("div")
-        var image = document.createElement("img")
-        var layout = document.createElement("div")
-        col.className = "col"
-        col.style = "width: 200px; height: 300px; margin-right: 15px;"
-        card.className = "card"
-        card.style = "width: 200px; height: 300px; margin-bottom: 15px; display: none"
-        image.className = "card-img-top"
-        image.style = "width: 200px; height: 200px;"
-        layout.style = "padding = 10px; width: 200px; height: 100px;"
-        col.appendChild(card)
-        card.appendChild(image)
-        card.appendChild(layout)
+        ta.value = text
+        col.appendChild(image)
+        col.appendChild(ta)
         parent.appendChild(col)
     }
 
     function clearField() {
         var f = document.getElementById("field")
         for (var i = f.childNodes.length - 1; i > -1; i--) {
-            console.log("remove")
             f.childNodes[i].remove()
         }
     }
